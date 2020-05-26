@@ -15,7 +15,7 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include <kalman_filter_odometry/kinematic.hpp>
+#include <kalman_filter_odometry/kf.hpp>
 
 namespace kf_odom
 {
@@ -36,18 +36,15 @@ namespace kf_odom
     void gpsCallback(const NavSatFixConstPtr& gps);
 
     ros::NodeHandle node_;
-    ros::Timer timer_;
     ros::Publisher pose_pub_;
     ros::Subscriber imu_sub_, gps_sub_;
-    tf::TransformListener listener_;
-    tf::StampedTransform imu_transform_;
+    ros::Time lastTime_;
+    //tf::TransformListener listener_;
+    //tf::StampedTransform imu_transform_;
 
     geometry_msgs::PoseWithCovarianceStamped  output_;
 
-    // KF filter
     //Kf kf_;
-
-    KinematicModel kinematic_;
   };
 } // namespace kf_odom
 

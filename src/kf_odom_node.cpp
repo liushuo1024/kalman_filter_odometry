@@ -8,8 +8,8 @@ KfOdomNode::KfOdomNode()
 {
   pose_pub_ = node_.advertise<geometry_msgs::PoseWithCovarianceStamped>("kf_odom/odom", 10);
   imu_sub_ = node_.subscribe("imu_data", 10, &KfOdomNode::imuCallback, this);
-  gps_sub_ = node_.subscribe("gps", 10, &KfOdomNode::gpsCallback, this); //might not need this
-  listener_.lookupTransform("base_link", "world", ros::Time(0), imu_transform_);
+  gps_sub_ = node_.subscribe("gps", 10, &KfOdomNode::gpsCallback, this);
+  //listener_.lookupTransform("/base_link", "/world", ros::Time(0), imu_transform_);
 };
 
 KfOdomNode::~KfOdomNode()
@@ -19,11 +19,15 @@ KfOdomNode::~KfOdomNode()
 void KfOdomNode::imuCallback(const ImuConstPtr& imu)
 {
   ROS_INFO("Got imu");
+  //KF prediction
+  //KF update
 };
 
 void KfOdomNode::gpsCallback(const NavSatFixConstPtr& gps)
 {
   ROS_INFO("Got gps");
+  //KF prediction
+  //KF update
 };
 
 

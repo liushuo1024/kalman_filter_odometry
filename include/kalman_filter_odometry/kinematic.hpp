@@ -9,25 +9,27 @@ using namespace Eigen;
 
 namespace kf_odom {
 
+  /**
+   * Class for the constant velocity model
+   */
   class KinematicModel
   {
   public:
-    KinematicModel();
+    KinematicModel(Matrix<float, 12, 1> init_state);
 
     virtual ~KinematicModel();
 
     void updateDt(float);
-    Matrix<float, 9, 1> predictState(Matrix<float,6,1>);
-    Matrix<float, 6, 1> getPose();
+    Matrix<float, 12, 1> predictNextState();
+    Matrix<float, 6, 1> getPose() const;
+    void setState(const Matrix<float, 12, 1>);
 
   private:
     void update_A();
-    void update_B();
 
     float dt_;
-    Matrix<float, 9, 9> A_;
-    Matrix<float, 9, 6> B_;
-    Matrix<float, 9, 1> state_t_minus_1_;
+    Matrix<float, 12, 12> A_;
+    Matrix<float, 12, 1> state_t_minus_1_;
   };
 } // namespace kf_odom
 

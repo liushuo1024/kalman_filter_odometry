@@ -4,7 +4,12 @@
 
 using namespace kf_odom;
 
-KfOdomNode::KfOdomNode()
+static unsigned int INIT_STEPS = 100;
+
+KfOdomNode::KfOdomNode() :
+  kf_(new Kf()),
+  imu_callback_counter_(0),
+  gps_callback_counter_(0)
 {
   pose_pub_ = node_.advertise<geometry_msgs::PoseWithCovarianceStamped>("kf_odom/odom", 10);
   imu_sub_ = node_.subscribe("imu_data", 10, &KfOdomNode::imuCallback, this);
@@ -19,15 +24,24 @@ KfOdomNode::~KfOdomNode()
 void KfOdomNode::imuCallback(const ImuConstPtr& imu)
 {
   ROS_INFO("Got imu");
-  //KF prediction
-  //KF update
+
+  if (imu_callback_counter_ < INIT_STEPS) kf_->initImu(imu);
+  //ToDo: KF prediction
+  //ToDo: KF update
+  output_ = kf_->getPose();
+  pose_pub_.publish(output_);
+  imu_callback_counter_++;
 };
 
 void KfOdomNode::gpsCallback(const NavSatFixConstPtr& gps)
 {
   ROS_INFO("Got gps");
-  //KF prediction
-  //KF update
+
+  //ToDo: KF prediction
+  //ToDo: KF update
+  output_ = kf_->getPose();
+  pose_pub_.publish(output_);
+  gps_callback_counter_++;
 };
 
 

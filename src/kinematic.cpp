@@ -4,10 +4,10 @@
 
 using namespace kf_odom;
 
-KinematicModel::KinematicModel(Matrix<float, 12, 1> init_state) :
+KinematicModel::KinematicModel() :
   dt_(0.1),
   A_(MatrixXf::Identity(12, 12)),
-  state_t_minus_1_(init_state)
+  state_t_minus_1_(MatrixXf::Zero(12, 1))
 {
   update_A();
 };
@@ -16,7 +16,7 @@ KinematicModel::~KinematicModel()
 {
 };
 
-void KinematicModel::updateDt(float dt)
+void KinematicModel::updateDt(const float dt)
 {
   dt_ = dt;
   update_A();
@@ -39,6 +39,13 @@ Matrix<float, 6, 1> KinematicModel::getPose() const
 void KinematicModel::setState(const Matrix<float, 12, 1> state)
 {
   state_t_minus_1_ = state;
+};
+
+void KinematicModel::setRPY(const Matrix<float, 3, 1> orientation)
+{
+  state_t_minus_1_(3, 0) = orientation(0, 0);
+  state_t_minus_1_(4, 0) = orientation(1, 0);
+  state_t_minus_1_(5, 0) = orientation(2, 0);
 };
 
 void KinematicModel::update_A()

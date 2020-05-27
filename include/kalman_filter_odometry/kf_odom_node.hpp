@@ -13,13 +13,13 @@
 #include "sensor_msgs/NavSatFix.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 
+#include <memory>
 #include <boost/thread/mutex.hpp>
 
 #include <kalman_filter_odometry/kf.hpp>
 
 namespace kf_odom
 {
-
   typedef boost::shared_ptr<sensor_msgs::Imu const> ImuConstPtr;
   typedef boost::shared_ptr<sensor_msgs::NavSatFix const> NavSatFixConstPtr;
 
@@ -44,7 +44,9 @@ namespace kf_odom
 
     geometry_msgs::PoseWithCovarianceStamped  output_;
 
-    //Kf kf_;
+    std::unique_ptr<Kf> kf_;
+
+    unsigned int imu_callback_counter_, gps_callback_counter_;
   };
 } // namespace kf_odom
 

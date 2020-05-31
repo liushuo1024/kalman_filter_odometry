@@ -61,10 +61,10 @@ namespace kf_odom
   private:
     std::unique_ptr<KinematicModel> kinematic_;
     ros::Time timeStamp_;
-    Eigen::Matrix<double, 9, 9> P_;  // Variance of the latent variable ~ N(state, P)
     Eigen::Matrix<double, 9, 9> F_;
     Eigen::Matrix<double, 6, 6> Q_;
     Eigen::Matrix<double, 9, 6> L_;
+    Eigen::Matrix<double, 9, 9> P_;  // Variance of the latent variable ~ N(state, P)
   };
 }
 

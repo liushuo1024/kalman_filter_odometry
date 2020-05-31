@@ -34,7 +34,7 @@ KfOdomNode::KfOdomNode() :
   gps_update_counter_(0),
   imu_update_counter_(0)
 {
-  pose_pub_       = node_.advertise<geometry_msgs::PoseWithCovarianceStamped>("kf_odom/odom", 10);
+  pose_pub_ = node_.advertise<geometry_msgs::PoseWithCovarianceStamped>("kf_odom/odom", 10);
 
   try{
     tfInitMsg_ = tfBuffer_.lookupTransform("world", "imu_link", ros::Time(0));

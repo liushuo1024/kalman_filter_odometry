@@ -28,10 +28,10 @@ using namespace kf_odom;
 Kf::Kf() :
   kinematic_(new KinematicModel()),
   timeStamp_(ros::Time::now()),
-  P_(Eigen::Matrix<double, 9, 9>::Identity()),
   F_(Eigen::Matrix<double, 9, 9>::Identity()),
   Q_(Eigen::Matrix<double, 6, 6>::Identity()),
-  L_(Eigen::Matrix<double, 9, 6>::Zero())
+  L_(Eigen::Matrix<double, 9, 6>::Zero()),
+  P_(Eigen::Matrix<double, 9, 9>::Identity())
 {
 };
 

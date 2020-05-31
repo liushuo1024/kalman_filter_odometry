@@ -1,4 +1,24 @@
-/* Author: Filippo Grazioli */
+//MIT License
+
+//Copyright (c) 2020 Filippo Grazioli
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 #ifndef KF_ODOM_NODE_HPP
 #define KF_ODOM_NODE_HPP
@@ -31,22 +51,21 @@ namespace kf_odom
     virtual ~KfOdomNode();
 
   private:
-    void imuCallback(const ImuConstPtr& imu);
-
-    void gpsCallback(const NavSatFixConstPtr& gps);
+    void imuPredictionCallback(const ImuConstPtr& imu);
+    void gpsUpdateCallback(const NavSatFixConstPtr& gps);
+    void imuUpdateCallback(const ImuConstPtr& imu);
 
     ros::NodeHandle node_;
     ros::Publisher pose_pub_;
-    ros::Subscriber imu_sub_, gps_sub_;
-    ros::Time lastTime_;
-    //tf::TransformListener listener_;
-    //tf::StampedTransform imu_transform_;
+    ros::Subscriber imu_pred_sub_, gps_upate_sub_, imu_update_sub_;
+    tf::TransformListener tfListener_;
+    tf::StampedTransform tfInit_;
 
-    geometry_msgs::PoseWithCovarianceStamped  output_;
+    geometry_msgs::PoseWithCovarianceStamped output_;
 
     std::unique_ptr<Kf> kf_;
 
-    unsigned int imu_callback_counter_, gps_callback_counter_;
+    unsigned int init_counter_, imu_prediction_counter_, gps_update_counter_, imu_update_counter_;
   };
 } // namespace kf_odom
 

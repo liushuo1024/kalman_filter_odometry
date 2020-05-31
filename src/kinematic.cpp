@@ -1,4 +1,24 @@
-/* Author: Filippo Grazioli */
+//MIT License
+
+//Copyright (c) 2020 Filippo Grazioli
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 #include <kalman_filter_odometry/kinematic.hpp>
 
@@ -6,52 +26,33 @@ using namespace kf_odom;
 
 KinematicModel::KinematicModel() :
   dt_(0.1),
-  A_(MatrixXf::Identity(12, 12)),
-  state_t_minus_1_(MatrixXf::Zero(12, 1))
+  state_(MatrixXd::Zero(10, 1))
 {
-  update_A();
+  state_ << 0, 0, 0, 0, 0, 0, 0, 0, 0, 1;
 };
 
 KinematicModel::~KinematicModel()
 {
 };
 
-void KinematicModel::updateDt(const float dt)
+void KinematicModel::updateDt(const double dt)
 {
   dt_ = dt;
-  update_A();
 };
 
-Matrix<float, 12, 1> KinematicModel::predictNextState()
+Matrix<double, 10, 1> KinematicModel::predictNextState()
 {
-  Matrix<float, 12, 1> state_t = A_ * state_t_minus_1_;
-  state_t_minus_1_ = state_t;
-  return state_t;
+  return state_;
 };
 
-Matrix<float, 6, 1> KinematicModel::getPose() const
+Matrix<double, 7, 1> KinematicModel::getPose() const
 {
-  MatrixXf pose(6, 1);
-  pose = state_t_minus_1_.block(0, 0, 6, 1);
+  MatrixXd pose(7, 1);
   return pose;
 };
 
-void KinematicModel::setState(const Matrix<float, 12, 1> state)
+void KinematicModel::initState(const Matrix<double, 10, 1>& state)
 {
-  state_t_minus_1_ = state;
-};
+  state_ = state;
+}
 
-void KinematicModel::setRPY(const Matrix<float, 3, 1> orientation)
-{
-  state_t_minus_1_(3, 0) = orientation(0, 0);
-  state_t_minus_1_(4, 0) = orientation(1, 0);
-  state_t_minus_1_(5, 0) = orientation(2, 0);
-};
-
-void KinematicModel::update_A()
-{
-  for (int i = 0; i < 6; i++)
-  {
-    A_(0 + i, 6 + i) = dt_;
-  }
-};

@@ -41,11 +41,11 @@ namespace kf_odom
 
     void updateDt(const double dt);
     void predictNextState(const Eigen::Vector3d& ang_vel,
-                     const Eigen::Vector3d& lin_acc,
-                     const Eigen::Matrix<double, 9, 9>& F,
-                     const Eigen::Matrix<double, 6, 6>& Q,
-                     const Eigen::Matrix<double, 9, 6>& L,
-                           Eigen::Matrix<double, 9, 9>& P);
+                          const Eigen::Vector3d& lin_acc,
+                          const Eigen::Matrix<double, 9, 9>& F,
+                          const Eigen::Matrix<double, 6, 6>& Q,
+                          const Eigen::Matrix<double, 9, 6>& L,
+                                Eigen::Matrix<double, 9, 9>& P);
 
     Matrix<double, 7, 1> getPose() const;
     void initState(const Matrix<double, 10, 1>& state);

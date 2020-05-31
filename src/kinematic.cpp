@@ -41,11 +41,11 @@ void KinematicModel::updateDt(const double dt)
 };
 
 void KinematicModel::predictNextState(const Eigen::Vector3d& ang_vel,
-                                                       const Eigen::Vector3d& lin_acc,
-                                                       const Eigen::Matrix<double, 9, 9>& F,
-                                                       const Eigen::Matrix<double, 6, 6>& Q,
-                                                       const Eigen::Matrix<double, 9, 6>& L,
-                                                             Eigen::Matrix<double, 9, 9>& P)
+                                      const Eigen::Vector3d& lin_acc,
+                                      const Eigen::Matrix<double, 9, 9>& F,
+                                      const Eigen::Matrix<double, 6, 6>& Q,
+                                      const Eigen::Matrix<double, 9, 6>& L,
+                                            Eigen::Matrix<double, 9, 9>& P)
 {
   //ToDo
 };

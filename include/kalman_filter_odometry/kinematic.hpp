@@ -30,7 +30,7 @@ using namespace Eigen;
 namespace kf_odom
 {
   /**
-   * Class for the constant velocity model
+   * Class for the constant acceleration / constant angular velocity model
    */
   class KinematicModel
   {

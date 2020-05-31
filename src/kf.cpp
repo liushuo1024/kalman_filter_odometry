@@ -41,6 +41,7 @@ Kf::~Kf()
 
 void Kf::updateTime() // must be called before the prediction step and after initState to compute dt
 {
+  //ToDo : shift the timestamp member to the Kinematic class
   ros::Time now = ros::Time::now();
   double dt = now.toSec() - timeStamp_.toSec();
   kinematic_->updateDt(dt);

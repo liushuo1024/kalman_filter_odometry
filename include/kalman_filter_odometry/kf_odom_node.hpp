@@ -27,6 +27,7 @@
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
+#include <tf2_ros/transform_listener.h>
 #include <ros/console.h>
 
 #include "sensor_msgs/Imu.h"
@@ -58,8 +59,10 @@ namespace kf_odom
     ros::NodeHandle node_;
     ros::Publisher pose_pub_;
     ros::Subscriber imu_pred_sub_, gps_upate_sub_, imu_update_sub_;
-    tf::TransformListener tfListener_;
-    tf::StampedTransform tfInit_;
+    tf2_ros::Buffer tfBuffer_;
+    tf2_ros::TransformListener tfListener_;
+    geometry_msgs::TransformStamped tfInitMsg_;
+    tf::StampedTransform tfInitSt_;
 
     geometry_msgs::PoseWithCovarianceStamped output_;
 

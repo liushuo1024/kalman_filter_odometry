@@ -27,14 +27,24 @@ using namespace kf_odom;
 static unsigned int INIT_STEPS = 100;
 
 KfOdomNode::KfOdomNode() :
+  tfListener_(tfBuffer_),
   kf_(new Kf()),
   init_counter_(0),
   imu_prediction_counter_(0),
   gps_update_counter_(0),
   imu_update_counter_(0)
 {
-  tfListener_.lookupTransform("world", "base_link", ros::Time(0), tfInit_);
   pose_pub_       = node_.advertise<geometry_msgs::PoseWithCovarianceStamped>("kf_odom/odom", 10);
+
+  try{
+    tfInitMsg_ = tfBuffer_.lookupTransform("world", "imu_link", ros::Time(0));
+    tf::transformStampedMsgToTF(tfInitMsg_, tfInitSt_);
+  }
+  catch (tf2::TransformException &ex) {
+    ROS_WARN("%s",ex.what());
+    ros::Duration(1.0).sleep();
+  }
+
   imu_pred_sub_   = node_.subscribe("imu_prediction", 10, &KfOdomNode::imuPredictionCallback, this);
   gps_upate_sub_  = node_.subscribe("gps_update", 10, &KfOdomNode::gpsUpdateCallback, this);
   imu_update_sub_ = node_.subscribe("imu_update", 10, &KfOdomNode::imuPredictionCallback, this);
@@ -48,7 +58,7 @@ void KfOdomNode::imuPredictionCallback(const ImuConstPtr& imu)
 {
   if (init_counter_ < INIT_STEPS)
   {
-    kf_->initState(tfInit_);
+    kf_->initState(tfInitSt_);
     init_counter_++;
     ROS_INFO("Imu init");
   }

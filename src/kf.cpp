@@ -27,7 +27,11 @@ using namespace kf_odom;
 
 Kf::Kf() :
   kinematic_(new KinematicModel()),
-  lastTime_(ros::Time::now())
+  timeStamp_(ros::Time::now()),
+  P_(Eigen::Matrix<double, 9, 9>::Identity()),
+  F_(Eigen::Matrix<double, 9, 9>::Identity()),
+  Q_(Eigen::Matrix<double, 6, 6>::Identity()),
+  L_(Eigen::Matrix<double, 9, 6>::Zero())
 {
 };
 
@@ -35,12 +39,12 @@ Kf::~Kf()
 {
 };
 
-void Kf::updateTime() // this must be called before the prediction step to compute dt
+void Kf::updateTime() // must be called before the prediction step and after initState to compute dt
 {
   ros::Time now = ros::Time::now();
-  double dt = now.toSec() - lastTime_.toSec();
+  double dt = now.toSec() - timeStamp_.toSec();
   kinematic_->updateDt(dt);
-  lastTime_ = now;
+  timeStamp_ = now;
 };
 
 void Kf::initState(const tf::StampedTransform& tfTransform)
@@ -54,6 +58,7 @@ void Kf::initState(const tf::StampedTransform& tfTransform)
   init_state(8, 0) = tfTransform.getRotation().z();
   init_state(9, 0) = tfTransform.getRotation().w();
   kinematic_->initState(init_state);
+  this->updateTime();
 };
 
 void Kf::getPose(geometry_msgs::PoseWithCovarianceStamped& pose) const
@@ -71,5 +76,17 @@ void Kf::getPose(geometry_msgs::PoseWithCovarianceStamped& pose) const
 
 void Kf::predict(const ImuConstPtr imu)
 {
-  //ToDo: continue here
+  Eigen::Vector3d ang_vel(imu->angular_velocity.x,
+                          imu->angular_velocity.y,
+                          imu->angular_velocity.z);
+
+  Eigen::Vector3d lin_acc(imu->linear_acceleration.x,
+                          imu->linear_acceleration.y,
+                          imu->linear_acceleration.z);
+
+  //ToDo : set F, Q, L - continue here
+
+  this->updateTime();
+
+  kinematic_->predictNextState(ang_vel, lin_acc, F_, Q_, L_, P_);
 };

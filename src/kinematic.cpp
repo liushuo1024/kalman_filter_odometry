@@ -40,13 +40,19 @@ void KinematicModel::updateDt(const double dt)
   dt_ = dt;
 };
 
-Matrix<double, 10, 1> KinematicModel::predictNextState()
+Matrix<double, 10, 1> KinematicModel::predictNextState(const Eigen::Vector3d& ang_vel,
+                                                       const Eigen::Vector3d& lin_acc,
+                                                       const Eigen::MatrixXd& F,
+                                                       const Eigen::MatrixXd& Q,
+                                                       const Eigen::MatrixXd& L,
+                                                       Eigen::MatrixXd& P)
 {
-  return state_;
+  //ToDo
 };
 
 Matrix<double, 7, 1> KinematicModel::getPose() const
 {
+  //ToDo
   MatrixXd pose(7, 1);
   return pose;
 };

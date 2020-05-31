@@ -40,7 +40,12 @@ namespace kf_odom
     virtual ~KinematicModel();
 
     void updateDt(const double dt);
-    Matrix<double, 10, 1> predictNextState();
+    predictNextState(const Eigen::Vector3d& ang_vel,
+                     const Eigen::Vector3d& lin_acc,
+                     const Eigen::MatrixXd& F,
+                     const Eigen::MatrixXd& Q,
+                     const Eigen::MatrixXd& L,
+                     Eigen::MatrixXd& P);
     Matrix<double, 7, 1> getPose() const;
     void initState(const Matrix<double, 10, 1>& state);
 

@@ -77,8 +77,13 @@ void Kf::getPose(geometry_msgs::PoseWithCovarianceStamped& pose) const
                    kinematic_pose(6, 0));
   quaternionTFToMsg(q, pose.pose.pose.orientation);
 
-  //for (int i = 0; i < P_.size(); i++)
-    //*(pose.pose.covariance.data() + i) = *(P_.data() + i);
+  for (int r = 0; r < P_.rows(); r++)
+  {
+    for (int c = 0; c < P_.cols(); c++)
+    {
+      pose.pose.covariance.at(r + c) = P_(r, c);
+    }
+  }
 };
 
 void Kf::predict(const ImuConstPtr imu)

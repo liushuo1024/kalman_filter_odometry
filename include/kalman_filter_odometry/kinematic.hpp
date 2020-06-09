@@ -24,6 +24,7 @@
 #define KINEMATIC_HPP
 
 #include <Eigen/Dense>
+#include <ros/ros.h>
 
 using namespace Eigen;
 
@@ -40,19 +41,18 @@ namespace kf_odom
     virtual ~KinematicModel();
 
     void updateDt(const double dt);
+    double dt() const;
     void predictNextState(const Eigen::Vector3d& ang_vel,
-                          const Eigen::Vector3d& lin_acc,
-                          const Eigen::Matrix<double, 9, 9>& F,
-                          const Eigen::Matrix<double, 6, 6>& Q,
-                          const Eigen::Matrix<double, 9, 6>& L,
-                                Eigen::Matrix<double, 9, 9>& P);
+                          const Eigen::Vector3d& lin_acc);
 
     Matrix<double, 7, 1> getPose() const;
     void initState(const Matrix<double, 10, 1>& state);
+    Eigen::Quaterniond getQuaternion() const;
 
   private:
     double dt_;
     Matrix<double, 10, 1> state_; // state = [x y z vx vy vz qx qy qz qw]
+    Eigen::Vector3d g_;
   };
 } // namespace kf_odom
 

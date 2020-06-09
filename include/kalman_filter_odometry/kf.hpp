@@ -54,14 +54,20 @@ namespace kf_odom
     void initState(const tf::StampedTransform& tfTransform);
     void getPose(geometry_msgs::PoseWithCovarianceStamped& pose) const;
     void predict(const ImuConstPtr imu);
+    inline const KinematicModel& getKinematic() const { return *kinematic_; };
+    void setParams(double par_imu_acc, double par_imu_w);
 
   private:
     std::unique_ptr<KinematicModel> kinematic_;
     ros::Time timeStamp_;
+
     Eigen::Matrix<double, 9, 9> F_;
     Eigen::Matrix<double, 6, 6> Q_;
     Eigen::Matrix<double, 9, 6> L_;
     Eigen::Matrix<double, 9, 9> P_;  // Variance of the latent variable ~ N(state, P)
+
+    // Parameters
+    double param_imu_acc_, param_imu_w_;
   };
 }
 

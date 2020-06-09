@@ -32,9 +32,15 @@ KfOdomNode::KfOdomNode() :
   init_counter_(0),
   imu_prediction_counter_(0),
   gps_update_counter_(0),
-  imu_update_counter_(0)
+  imu_update_counter_(0),
+  param_imu_acc_(0.1),
+  param_imu_w_(0.1)
 {
-  pose_pub_ = node_.advertise<geometry_msgs::PoseWithCovarianceStamped>("kf_odom/odom", 10);
+  node_.param("par_imu_acc", param_imu_acc_, 0.1);
+  node_.param("par_imu_w", param_imu_w_, 0.1);
+  kf_->setParams(param_imu_acc_, param_imu_w_);
+
+  pose_pub_       = node_.advertise<geometry_msgs::PoseWithCovarianceStamped>("kf_odom/odom", 10);
   imu_pred_sub_   = node_.subscribe("imu_prediction", 10, &KfOdomNode::imuPredictionCallback, this);
   gps_upate_sub_  = node_.subscribe("gps_update", 10, &KfOdomNode::gpsUpdateCallback, this);
   imu_update_sub_ = node_.subscribe("imu_update", 10, &KfOdomNode::imuUpdateCallback, this);
@@ -73,6 +79,7 @@ void KfOdomNode::gpsUpdateCallback(const NavSatFixConstPtr& gps)
   if (init_counter_ >= INIT_STEPS)
   {
     //ToDo: KF update gps
+    kf_->getPose(output_);
     pose_pub_.publish(output_);
     gps_update_counter_++;
     ROS_INFO("KF GPS update");
@@ -84,6 +91,7 @@ void KfOdomNode::imuUpdateCallback(const ImuConstPtr& imu)
   if (init_counter_ >= INIT_STEPS)
   {
     //ToDo: KF update imu correction
+    kf_->getPose(output_);
     pose_pub_.publish(output_);
     imu_update_counter_++;
     ROS_INFO("KF IMU update");

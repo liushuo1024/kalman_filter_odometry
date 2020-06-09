@@ -68,6 +68,9 @@ namespace kf_odom
     std::unique_ptr<Kf> kf_;
 
     unsigned int init_counter_, imu_prediction_counter_, gps_update_counter_, imu_update_counter_;
+
+    // Parameters
+    double param_imu_acc_, param_imu_w_;
   };
 } // namespace kf_odom
 

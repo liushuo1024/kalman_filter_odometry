@@ -31,7 +31,9 @@ Kf::Kf() :
   F_(Eigen::Matrix<double, 9, 9>::Identity()),
   Q_(Eigen::Matrix<double, 6, 6>::Identity()),
   L_(Eigen::Matrix<double, 9, 6>::Zero()),
-  P_(Eigen::Matrix<double, 9, 9>::Identity())
+  P_(Eigen::Matrix<double, 9, 9>::Identity()),
+  param_imu_acc_(0.1),
+  param_imu_w_(0.1)
 {
 };
 
@@ -68,11 +70,15 @@ void Kf::getPose(geometry_msgs::PoseWithCovarianceStamped& pose) const
   pose.pose.pose.position.x = kinematic_pose(0, 0);
   pose.pose.pose.position.y = kinematic_pose(1, 0);
   pose.pose.pose.position.z = kinematic_pose(2, 0);
-  tf::Quaternion q(kinematic_pose(6, 0),
-                   kinematic_pose(7, 0),
-                   kinematic_pose(8, 0),
-                   kinematic_pose(9, 0));
+
+  tf::Quaternion q(kinematic_pose(3, 0),
+                   kinematic_pose(4, 0),
+                   kinematic_pose(5, 0),
+                   kinematic_pose(6, 0));
   quaternionTFToMsg(q, pose.pose.pose.orientation);
+
+  //for (int i = 0; i < P_.size(); i++)
+    //*(pose.pose.covariance.data() + i) = *(P_.data() + i);
 };
 
 void Kf::predict(const ImuConstPtr imu)
@@ -85,9 +91,35 @@ void Kf::predict(const ImuConstPtr imu)
                           imu->linear_acceleration.y,
                           imu->linear_acceleration.z);
 
-  //ToDo : set F, Q, L - continue here
+  Eigen::Quaterniond orientation_quat = kinematic_->getQuaternion();
+  Eigen::Matrix3d rotation_mat = orientation_quat.toRotationMatrix();
 
   this->updateTime();
 
-  kinematic_->predictNextState(ang_vel, lin_acc, F_, Q_, L_, P_);
+  kinematic_->predictNextState(ang_vel, lin_acc);
+
+  // Update F
+  F_.block<3, 3>(0, 3) = kinematic_->dt() * Eigen::Matrix3d::Identity();
+  Eigen::Matrix3d skew_lin_acc;
+  skew_lin_acc << 0, -lin_acc(2), lin_acc(1),
+                  lin_acc(2), 0, -lin_acc(0),
+                  -lin_acc(1), lin_acc(0), 0;
+  F_.block<3, 3>(3, 6) = rotation_mat  * (-skew_lin_acc) * kinematic_->dt();
+
+  // Update Q
+  Q_.block<3, 3>(0, 0) = param_imu_acc_ * Q_.block<3, 3>(0, 0);
+  Q_.block<3, 3>(3, 3) = param_imu_w_ * Q_.block<3, 3>(3, 3);
+  Q_ = Q_ * (this->getKinematic().dt() * this->getKinematic().dt());
+
+  // Update L
+  L_.block<3, 3>(3, 0) = Eigen::Matrix3d::Identity();
+  L_.block<3, 3>(6, 3) = Eigen::Matrix3d::Identity();
+
+  P_ = F_ * P_ * F_.transpose() + L_ * Q_ * L_.transpose();
+};
+
+void Kf::setParams(double param_imu_acc, double param_imu_w)
+{
+  param_imu_acc_ = param_imu_acc;
+  param_imu_w_ = param_imu_w;
 };

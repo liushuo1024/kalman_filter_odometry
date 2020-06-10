@@ -73,14 +73,14 @@ class Plotter:
 
         if self.callback_count % 100 == 0:  # only update the plot after 100 callbacks
             self.plot3D.clear()
-            self.plot3D.set_title('Position')
+            self.plot3D.set_title('Position (rotate to refresh)')
             self.plot3D.plot(self.position_dict['prediction'][:, 0],
                              self.position_dict['prediction'][:, 1],
                              self.position_dict['prediction'][:, 2], 'c1', label='predicted position')
             self.plot3D.plot(self.position_dict['gt'][:, 0],
                              self.position_dict['gt'][:, 1],
                              self.position_dict['gt'][:, 2], 'r1', label='gt position')
-            self.plot3D.legend()
+            self.plot3D.legend(loc='lower right')
 
             #ToDo: plot orientation
 
@@ -93,7 +93,8 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         try:
             rospy.Subscriber('kf_odom/odom', PoseWithCovarianceStamped, plotter.odom_callback)
-            plt.show()
+	    plotter.plot3D.set_title('Position - rotate to refresh')
+            plt.show()  # cannot place this in the callback, rotate the plot to update it
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
 

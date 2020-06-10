@@ -1,4 +1,5 @@
 <launch>
+
   <node pkg="kalman_filter_odometry" type="kalman_filter_odometry_node" name="kalman_filter_odometry_node">   
     <param name="par_imu_acc"    type="double" value="0.1" />
     <param name="par_imu_w"      type="double" value="0.1" />
@@ -8,5 +9,9 @@
     <remap from="world"		 to="world" />
     <remap from="imu_link"       to="imu_link" />
   </node>
-  <node pkg="rosbag" type="play" name="player" output="screen" args="--clock /home/filippo/ros_workspaces/kalman_filter_odometry_ws/data/kitti_bags/kitti_2011_09_26_drive_0117_synced.bag"/>
+
+  <node pkg="kalman_filter_odometry" name="plotter" type="plotter.py" output="screen" />
+
+  <node pkg="rosbag" type="play" name="player" output="screen" args="--clock /home/filippo/ros_workspaces/kalman_filter_odometry_ws/data/kitti_bags/kitti_2011_09_26_drive_0117_synced.bag" />
+
 </launch>

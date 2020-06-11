@@ -82,7 +82,7 @@ class Plotter:
         new_gt_orientation = np.expand_dims(np.array(rpy), axis=0)
         self.orientation_dict['gt'] = np.append(self.orientation_dict['gt'], new_gt_orientation, axis=0)
 
-        if self.callback_count % 100 == 0:  # only update the plot after 100 callbacks
+        if self.callback_count % 20 == 0:  # do not update the plots at every callback
             self.plot_position.clear()
             self.plot_position.set_title('Position XYZ (rotate to refresh)')
             self.plot_position.plot(self.position_dict['prediction'][:, 0],

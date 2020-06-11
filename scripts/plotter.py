@@ -23,22 +23,24 @@
 # SOFTWARE.
 
 import rospy
+from geometry_msgs.msg import PoseWithCovarianceStamped
+import tf
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 from mpl_toolkits.mplot3d import Axes3D
-from geometry_msgs.msg import PoseWithCovarianceStamped
-import tf
 
 
 class Plotter:
     def __init__(self):
         mpl.rcParams['legend.fontsize'] = 10
+        gs = GridSpec(3, 2)
         self.fig = plt.figure()
-        self.plot_position = self.fig.add_subplot(411, projection='3d')
-        self.plot_roll = self.fig.add_subplot(412)
-        self.plot_pitch = self.fig.add_subplot(413)
-        self.plot_yaw = self.fig.add_subplot(414)
+        self.plot_position = self.fig.add_subplot(gs[:, 0], projection='3d')
+        self.plot_roll = self.fig.add_subplot(gs[0, 1])
+        self.plot_pitch = self.fig.add_subplot(gs[1, 1])
+        self.plot_yaw = self.fig.add_subplot(gs[2, 1])
 
         position = np.empty(shape=[0, 3])
         gt_position = np.empty(shape=[0, 3])
@@ -92,19 +94,19 @@ class Plotter:
             self.plot_position.legend(loc='lower right')
 
             self.plot_roll.clear()
-            self.plot_roll.set_title('Roll')
+            self.plot_roll.set_title('Roll [rad]')
             self.plot_roll.plot(self.orientation_dict['prediction'][:, 0], 'c1', label='predicted roll')
             self.plot_roll.plot(self.orientation_dict['gt'][:, 0], 'r1', label='gt roll')
             self.plot_roll.legend(loc='lower right')
 
             self.plot_pitch.clear()
-            self.plot_pitch.set_title('Pitch')
+            self.plot_pitch.set_title('Pitch [rad]')
             self.plot_pitch.plot(self.orientation_dict['prediction'][:, 1], 'c1', label='predicted pitch')
             self.plot_pitch.plot(self.orientation_dict['gt'][:, 1], 'r1', label='gt pitch')
             self.plot_pitch.legend(loc='lower right')
 
             self.plot_yaw.clear()
-            self.plot_yaw.set_title('Yaw')
+            self.plot_yaw.set_title('Yaw [rad]')
             self.plot_yaw.plot(self.orientation_dict['prediction'][:, 2], 'c1', label='predicted yaw')
             self.plot_yaw.plot(self.orientation_dict['gt'][:, 2], 'r1', label='gt yaw')
             self.plot_yaw.legend(loc='lower right')
@@ -118,9 +120,9 @@ if __name__ == '__main__':
         try:
             rospy.Subscriber('kf_odom/odom', PoseWithCovarianceStamped, plotter.odom_callback)
             plotter.plot_position.set_title('Position XYZ (rotate to refresh)')
-            plotter.plot_roll.set_title('Roll')
-            plotter.plot_pitch.set_title('Pitch')
-            plotter.plot_yaw.set_title('Yaw')
+            plotter.plot_roll.set_title('Roll [rad]')
+            plotter.plot_pitch.set_title('Pitch [rad]')
+            plotter.plot_yaw.set_title('Yaw [rad]')
             plt.show()  # cannot place this in the callback, rotate the plot to update it
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
